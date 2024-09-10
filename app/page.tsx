@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState } from 'react'
+import Image from 'next/image'
 
 interface PromptResponse {
   prompt: string;
@@ -31,6 +31,13 @@ const audiences = [
 interface ImageData {
   prompt: string;
   url: string;
+}
+
+interface StreamedData {
+  type: string;
+  data: any; // You might want to create a more specific type for this
+  model?: string;
+  prompt?: string;
 }
 
 export default function Home() {
@@ -97,15 +104,15 @@ export default function Home() {
     setLoading(false)
   }
 
-  const handleStreamedData = (data: any) => {
+  const handleStreamedData = (data: StreamedData) => {
     switch (data.type) {
       case 'eventStatus':
         setEventStatus(data.data)
-        setEventStatusInfo({ model: data.model, prompt: data.prompt })
+        setEventStatusInfo({ model: data.model ?? '', prompt: data.prompt ?? '' })
         break
       case 'prompts':
         setPromptsAndResponses(data.data.map((prompt: string) => ({ prompt, response: '', model: '', systemPrompt: '' })))
-        setPromptsInfo({ model: data.model, prompt: data.prompt })
+        setPromptsInfo({ model: data.model ?? '', prompt: data.prompt ?? '' })
         break
       case 'response':
         setPromptsAndResponses(prev => prev.map(item => 
@@ -272,9 +279,9 @@ export default function Home() {
                   <p className="font-semibold mb-2">Prompt : {image.prompt}</p>
                 )}
                 {image.url ? (
-                  <img src={image.url} alt={`Generated image ${index + 1}`} className="mt-2 max-w-full h-auto" />
+                  <Image src={image.url} alt={`Generated image ${index + 1}`} width={500} height={500} className="mt-2 max-w-full h-auto" />
                 ) : (
-                  <p>Chargement de l'image...</p>
+                  <p>Chargement de l&apos;image...</p>
                 )}
               </div>
             ))}
